@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/youthx_db
+    username: postgres
+    password: KizzRiha@_8Nu9I
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
