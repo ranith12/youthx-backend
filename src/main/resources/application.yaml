@@ -2,9 +2,9 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/youthx_db
     username: postgres
-    password: KizzRiha@_8Nu9I
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: validate
-    open-in-view: false
+    open-in-view:
