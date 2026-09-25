@@ -27,8 +27,6 @@ public class User {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(name = "xp_points", nullable = false)
-    private Integer xpPoints;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;

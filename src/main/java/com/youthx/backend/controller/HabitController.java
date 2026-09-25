@@ -76,6 +76,18 @@ public class HabitController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/complete")
+    public ResponseEntity<HabitResponse> complete(@PathVariable Long id) {
+        UUID currentUserId = currentUserProvider.currentUserId();
+        return ResponseEntity.ok(toResponse(habitService.complete(currentUserId, id)));
+    }
+
+    @PostMapping("/{id}/uncomplete")
+    public ResponseEntity<HabitResponse> uncomplete(@PathVariable Long id) {
+        UUID currentUserId = currentUserProvider.currentUserId();
+        return ResponseEntity.ok(toResponse(habitService.uncomplete(currentUserId, id)));
+    }
+
     private HabitResponse toResponse(Habit habit) {
         HabitResponse response = new HabitResponse();
         response.setId(habit.getId());

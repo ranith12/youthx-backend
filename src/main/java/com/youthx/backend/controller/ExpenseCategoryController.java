@@ -11,12 +11,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/expense-categories")
 @RequiredArgsConstructor
 public class ExpenseCategoryController {
+
+    /**
+     * Centralized income category name set.
+     * Computed at runtime because the DB has no is_income column.
+     * A category whose name appears in this set is treated as income.
+     */
+    private static final Set<String> INCOME_CATEGORY_NAMES = Set.of(
+            "Salary", "Freelance", "Gift", "Investment", "Rental"
+    );
 
     private final ExpenseCategoryService expenseCategoryService;
 
@@ -33,6 +43,7 @@ public class ExpenseCategoryController {
         response.setId(category.getId());
         response.setName(category.getName());
         response.setIcon(category.getIcon());
+        response.setIncome(INCOME_CATEGORY_NAMES.contains(category.getName()));
         return response;
     }
 }

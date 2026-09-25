@@ -2,6 +2,7 @@ package com.youthx.backend.service;
 
 
 import com.youthx.backend.entity.Goal;
+import com.youthx.backend.exception.ResourceOwnershipException;
 import com.youthx.backend.repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class GoalService {
                 ));
 
         if (!existing.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("User does not own this goal");
+            throw new ResourceOwnershipException("User does not own this goal");
         }
 
         return existing;
@@ -48,7 +49,7 @@ public class GoalService {
                 .orElseThrow(() -> new NoSuchElementException("Goal not found with id: " + goalId));
 
         if (!existing.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("User does not own this goal");
+            throw new ResourceOwnershipException("User does not own this goal");
         }
 
         existing.setName(goal.getName());
@@ -66,7 +67,7 @@ public class GoalService {
                 .orElseThrow(() -> new NoSuchElementException("Goal not found with id: " + goalId));
 
         if (!existing.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("User does not own this goal");
+            throw new ResourceOwnershipException("User does not own this goal");
         }
 
         goalRepository.delete(existing);

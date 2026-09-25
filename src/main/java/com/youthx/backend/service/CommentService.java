@@ -2,6 +2,7 @@ package com.youthx.backend.service;
 
 
 import com.youthx.backend.entity.Comment;
+import com.youthx.backend.exception.ResourceOwnershipException;
 import com.youthx.backend.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,7 @@ public class CommentService {
                 .orElseThrow(() -> new NoSuchElementException("Comment not found with id: " + commentId));
 
         if (!comment.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("User does not own this comment");
+            throw new ResourceOwnershipException("User does not own this comment");
         }
 
         commentRepository.delete(comment);

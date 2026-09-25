@@ -2,6 +2,7 @@ package com.youthx.backend.service;
 
 
 import com.youthx.backend.entity.Todo;
+import com.youthx.backend.exception.ResourceOwnershipException;
 import com.youthx.backend.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class TodoService {
                 .orElseThrow(() -> new NoSuchElementException("Todo not found with id: " + todoId));
 
         if (!existing.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("User does not own this todo");
+            throw new ResourceOwnershipException("User does not own this todo");
         }
 
         existing.setTitle(todo.getTitle());
@@ -55,7 +56,7 @@ public class TodoService {
                 .orElseThrow(() -> new NoSuchElementException("Todo not found with id: " + todoId));
 
         if (!existing.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("User does not own this todo");
+            throw new ResourceOwnershipException("User does not own this todo");
         }
 
         todoRepository.delete(existing);

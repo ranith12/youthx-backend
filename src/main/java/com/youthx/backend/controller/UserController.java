@@ -24,7 +24,6 @@ public class UserController {
         response.setId(user.getId());
         response.setEmail(user.getEmail());
         response.setFullName(user.getFullName());
-        response.setXpPoints(user.getXpPoints());
         response.setCreatedAt(user.getCreatedAt());
         response.setUpdatedAt(user.getUpdatedAt());
 

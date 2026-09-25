@@ -3,6 +3,7 @@ package com.youthx.backend.service;
 
 import com.youthx.backend.entity.Post;
 import com.youthx.backend.entity.PostPhoto;
+import com.youthx.backend.exception.ResourceOwnershipException;
 import com.youthx.backend.repository.PostPhotoRepository;
 import com.youthx.backend.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -22,6 +24,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostPhotoRepository postPhotoRepository;
+    private final PostPhotoStorageService postPhotoStorageService;
 
     @Transactional
     public Post createPost(UUID currentUserId, String content, List<String> photoUrls) {
@@ -61,7 +64,7 @@ public class PostService {
         Post post = getPost(postId);
 
         if (!post.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("User does not own this post");
+            throw new ResourceOwnershipException("User does not own this post");
         }
 
         post.setContent(content);
@@ -75,9 +78,34 @@ public class PostService {
         Post post = getPost(postId);
 
         if (!post.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException("User does not own this post");
+            throw new ResourceOwnershipException("User does not own this post");
         }
 
         postRepository.delete(post);
+    }
+
+    /** Verifies ownership, stores the photo and attaches it to the post. */
+    @Transactional
+    public Post addPhoto(UUID currentUserId, Long postId, MultipartFile file) {
+        Post post = getPost(postId);
+
+        if (!post.getUserId().equals(currentUserId)) {
+            throw new ResourceOwnershipException("User does not own this post");
+        }
+
+        String photoUrl = postPhotoStorageService.store(file);
+
+        PostPhoto photo = new PostPhoto();
+        photo.setPostId(post.getId());
+        photo.setPhotoUrl(photoUrl);
+        photo.setDisplayOrder(countPhotos(postId));
+        photo.setCreatedAt(OffsetDateTime.now());
+        postPhotoRepository.save(photo);
+
+        return post;
+    }
+
+    private int countPhotos(Long postId) {
+        return postPhotoRepository.findByPostIdOrderByDisplayOrderAsc(postId).size();
     }
 }

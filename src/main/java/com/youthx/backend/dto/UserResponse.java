@@ -12,7 +12,6 @@ public class UserResponse {
     private UUID id;
     private String email;
     private String fullName;
-    private Integer xpPoints;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

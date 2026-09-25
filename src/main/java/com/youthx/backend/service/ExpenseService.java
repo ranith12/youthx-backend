@@ -2,6 +2,7 @@ package com.youthx.backend.service;
 
 
 import com.youthx.backend.entity.Expense;
+import com.youthx.backend.exception.ResourceOwnershipException;
 import com.youthx.backend.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ public class ExpenseService {
                 .orElseThrow(() -> new NoSuchElementException("Expense not found"));
 
         if (!existingExpense.getUserId().equals(currentUserId)) {
-            throw new IllegalStateException("You do not own this expense");
+            throw new ResourceOwnershipException("You do not own this expense");
         }
 
         existingExpense.setCategoryId(updatedExpense.getCategoryId());
@@ -50,7 +51,7 @@ public class ExpenseService {
                 .orElseThrow(() -> new NoSuchElementException("Expense not found"));
 
         if (!existingExpense.getUserId().equals(currentUserId)) {
-            throw new IllegalStateException("You do not own this expense");
+            throw new ResourceOwnershipException("You do not own this expense");
         }
 
         expenseRepository.delete(existingExpense);

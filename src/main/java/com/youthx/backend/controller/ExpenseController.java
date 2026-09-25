@@ -58,7 +58,7 @@ public class ExpenseController {
                 .map(this::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(new PageResponse<>(content, page.getNumber(), page.getSize(),
-                page.getTotalElements(), page.getTotalPages()));
+                page.getTotalElements(), page.getTotalPages(), page.isLast()));
     }
 
     @PutMapping("/{id}")

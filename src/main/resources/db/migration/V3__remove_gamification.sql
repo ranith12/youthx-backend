@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS user_badges;
+DROP TABLE IF EXISTS user_challenges;
+DROP TABLE IF EXISTS badges;
+DROP TABLE IF EXISTS challenges;
+
+ALTER TABLE users DROP CONSTRAINT IF EXISTS chk_users_xp_points;
+ALTER TABLE users DROP COLUMN IF EXISTS xp_points;

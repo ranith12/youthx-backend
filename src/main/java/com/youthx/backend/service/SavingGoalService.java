@@ -1,6 +1,7 @@
 package com.youthx.backend.service;
 
 import com.youthx.backend.entity.SavingGoal;
+import com.youthx.backend.exception.ResourceOwnershipException;
 import com.youthx.backend.repository.SavingGoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class SavingGoalService {
                         );
 
         if (!savingGoal.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException(
+            throw new ResourceOwnershipException(
                     "User does not own this saving goal"
             );
         }
@@ -88,7 +89,7 @@ public class SavingGoalService {
                         );
 
         if (!existingSavingGoal.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException(
+            throw new ResourceOwnershipException(
                     "User does not own this saving goal"
             );
         }
@@ -121,7 +122,7 @@ public class SavingGoalService {
                         );
 
         if (!savingGoal.getUserId().equals(currentUserId)) {
-            throw new IllegalArgumentException(
+            throw new ResourceOwnershipException(
                     "User does not own this saving goal"
             );
         }

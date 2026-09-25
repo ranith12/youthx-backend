@@ -38,7 +38,6 @@ public class UserService {
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(password));
         user.setFullName(fullName);
-        user.setXpPoints(0);
         user.setCreatedAt(OffsetDateTime.now());
 
         return userRepository.save(user);
