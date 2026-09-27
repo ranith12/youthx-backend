@@ -63,6 +63,23 @@ class RequestValidationTests {
         return request;
     }
 
+    private static UpdateExpenseRequest validExpenseUpdate() {
+        UpdateExpenseRequest request = new UpdateExpenseRequest();
+        request.setCategoryId(1L);
+        request.setType("expense");
+        request.setAmount(new BigDecimal("10.00"));
+        request.setTransactionDate(LocalDate.now());
+        return request;
+    }
+
+    private static CreateTodoRequest validTodoCreate() {
+        CreateTodoRequest request = new CreateTodoRequest();
+        request.setTitle("Ship it");
+        request.setPriority("medium");
+        request.setIsCompleted(false);
+        return request;
+    }
+
     // ---------- CreateExpenseRequest ----------
 
     @Test
@@ -207,5 +224,93 @@ class RequestValidationTests {
         Set<ConstraintViolation<Object>> violations = validate(request);
 
         assertEquals(0, violations.stream().filter(v -> v.getPropertyPath().toString().equals("dueDate")).count());
+    }
+
+    @Test
+    void todoRequestRejectsInvalidPriority() {
+        for (String invalidPriority : new String[]{"urgent", "HIGH", "Medium", "", "low "}) {
+            UpdateTodoRequest request = validTodo();
+            request.setPriority(invalidPriority);
+
+            Set<ConstraintViolation<Object>> violations = validate(request);
+
+            assertFalse(violations.isEmpty(), "priority '" + invalidPriority + "' must be rejected");
+            assertTrue(hasViolationOn(violations, "priority"));
+        }
+    }
+
+    // ---------- UpdateExpenseRequest ----------
+
+    @Test
+    void expenseUpdateRequestWithValidValuesPasses() {
+        assertTrue(validate(validExpenseUpdate()).isEmpty());
+    }
+
+    @Test
+    void expenseUpdateRequestRejectsInvalidType() {
+        for (String invalidType : new String[]{"transfer", "EXPENSE", "expenses", "", "expense "}) {
+            UpdateExpenseRequest request = validExpenseUpdate();
+            request.setType(invalidType);
+
+            Set<ConstraintViolation<Object>> violations = validate(request);
+
+            assertFalse(violations.isEmpty(), "type '" + invalidType + "' must be rejected");
+            assertTrue(hasViolationOn(violations, "type"));
+        }
+    }
+
+    @Test
+    void expenseUpdateRequestAcceptsBothValidTypes() {
+        for (String validType : new String[]{"expense", "income"}) {
+            UpdateExpenseRequest request = validExpenseUpdate();
+            request.setType(validType);
+
+            assertTrue(validate(request).isEmpty(), "type '" + validType + "' must be accepted");
+        }
+    }
+
+    @Test
+    void expenseUpdateRequestWithNullTypeFails() {
+        UpdateExpenseRequest request = validExpenseUpdate();
+        request.setType(null);
+
+        assertTrue(hasViolationOn(validate(request), "type"));
+    }
+
+    // ---------- CreateTodoRequest ----------
+
+    @Test
+    void todoCreateRequestRejectsInvalidPriority() {
+        for (String invalidPriority : new String[]{"urgent", "HIGH", "Medium", "", "low "}) {
+            CreateTodoRequest request = validTodoCreate();
+            request.setPriority(invalidPriority);
+
+            Set<ConstraintViolation<Object>> violations = validate(request);
+
+            assertFalse(violations.isEmpty(), "priority '" + invalidPriority + "' must be rejected");
+            assertTrue(hasViolationOn(violations, "priority"));
+        }
+    }
+
+    @Test
+    void todoCreateRequestAcceptsAllValidPriorities() {
+        for (String priority : new String[]{"high", "medium", "low"}) {
+            CreateTodoRequest request = validTodoCreate();
+            request.setPriority(priority);
+
+            assertTrue(validate(request).isEmpty(), "priority '" + priority + "' must be accepted");
+        }
+    }
+
+    @Test
+    void todoCreateRequestStillAllowsOmittedPriority() {
+        CreateTodoRequest request = validTodoCreate();
+        request.setPriority(null);
+
+        assertTrue(validate(request).isEmpty(), "omitted priority must fall through to the service default");
+
+        CreateTodoRequest bare = new CreateTodoRequest();
+        bare.setTitle("Only a title");
+        assertTrue(validate(bare).isEmpty(), "title-only payload must remain valid");
     }
 }

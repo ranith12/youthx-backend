@@ -2,6 +2,7 @@ package com.youthx.backend.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,7 +12,9 @@ public class UpdateExpenseRequest {
     @NotNull
     private Long categoryId;
 
+    // must be one of expense | income (chk_expenses_type)
     @NotNull
+    @Pattern(regexp = "expense|income", message = "type must be one of: expense, income")
     private String type;
 
     @NotNull

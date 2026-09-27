@@ -3,6 +3,7 @@ package com.youthx.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ public class UpdateTodoRequest {
 
     // must be one of high | medium | low (chk_todos_priority)
     @NotNull(message = "priority must not be null")
+    @Pattern(regexp = "high|medium|low", message = "priority must be one of: high, medium, low")
     private String priority;
 
     private LocalDate dueDate;
