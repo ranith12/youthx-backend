@@ -30,7 +30,7 @@ public class CommentService {
     }
 
     public Page<Comment> listComments(Long postId, Pageable pageable) {
-        return commentRepository.findByPostId(postId, pageable);
+        return commentRepository.findByPostIdOrderByCreatedAtAscIdAsc(postId, pageable);
     }
 
     public void deleteComment(UUID currentUserId, Long commentId) {

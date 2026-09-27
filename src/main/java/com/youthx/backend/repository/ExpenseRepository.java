@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     Page<Expense> findByUserId(UUID userId, Pageable pageable);
+
+    Page<Expense> findByUserIdOrderByTransactionDateDescIdDesc(UUID userId, Pageable pageable);
 }

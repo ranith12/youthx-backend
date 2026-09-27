@@ -29,7 +29,7 @@ public class ExpenseService {
     }
 
     public Page<Expense> listByUser(UUID currentUserId, Pageable pageable) {
-        return expenseRepository.findByUserId(currentUserId, pageable);
+        return expenseRepository.findByUserIdOrderByTransactionDateDescIdDesc(currentUserId, pageable);
     }
 
     public Expense update(UUID currentUserId, Long expenseId, Expense updatedExpense) {

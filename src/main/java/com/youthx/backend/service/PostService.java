@@ -56,7 +56,7 @@ public class PostService {
     }
 
     public Page<Post> getFeed(Pageable pageable) {
-        return postRepository.findAll(pageable);
+        return postRepository.findAllByOrderByCreatedAtDescIdDesc(pageable);
     }
 
     @Transactional

@@ -5,14 +5,20 @@ import com.youthx.backend.repository.ExpenseCategoryRepository;
 import com.youthx.backend.repository.ExpenseRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.youthx.backend.exception.ResourceOwnershipException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -34,7 +40,7 @@ class ExpenseServiceTests {
     }
 
     @Test
-    void ownershipViolationOnUpdateThrowsIllegalArgumentException() {
+    void ownershipViolationOnUpdateThrowsResourceOwnershipException() {
         Expense expense = new Expense();
         expense.setId(1L);
         expense.setUserId(owner);
@@ -47,7 +53,7 @@ class ExpenseServiceTests {
     }
 
     @Test
-    void ownershipViolationOnDeleteThrowsIllegalArgumentException() {
+    void ownershipViolationOnDeleteThrowsResourceOwnershipException() {
         Expense expense = new Expense();
         expense.setId(1L);
         expense.setUserId(owner);
@@ -106,6 +112,18 @@ class ExpenseServiceTests {
 
         verify(expenseRepository).save(expense);
         org.junit.jupiter.api.Assertions.assertEquals(owner, expense.getUserId());
+    }
+
+    @Test
+    void listByUserDelegatesToDeterministicallyOrderedFinder() {
+        Pageable pageable = PageRequest.of(0, 20);
+        Page<Expense> expected = new PageImpl<>(List.of());
+        when(expenseRepository.findByUserIdOrderByTransactionDateDescIdDesc(owner, pageable)).thenReturn(expected);
+
+        Page<Expense> actual = expenseService.listByUser(owner, pageable);
+
+        assertSame(expected, actual);
+        verify(expenseRepository).findByUserIdOrderByTransactionDateDescIdDesc(owner, pageable);
     }
 
     @Test
