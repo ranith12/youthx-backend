@@ -44,13 +44,9 @@ public class UserService {
     }
 
     public User login(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new NoSuchElementException(
-                                "User not found with email: " + email
-                        ));
+        User user = userRepository.findByEmail(email).orElse(null);
 
-        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+        if (user == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new InvalidCredentialsException("Invalid credentials");
         }
 

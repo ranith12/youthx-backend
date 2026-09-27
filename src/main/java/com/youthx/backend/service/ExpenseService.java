@@ -3,6 +3,7 @@ package com.youthx.backend.service;
 
 import com.youthx.backend.entity.Expense;
 import com.youthx.backend.exception.ResourceOwnershipException;
+import com.youthx.backend.repository.ExpenseCategoryRepository;
 import com.youthx.backend.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,8 +19,10 @@ import java.util.UUID;
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
+    private final ExpenseCategoryRepository expenseCategoryRepository;
 
     public Expense create(UUID currentUserId, Expense expense) {
+        validateCategoryExists(expense.getCategoryId());
         expense.setUserId(currentUserId);
         expense.setCreatedAt(OffsetDateTime.now());
         return expenseRepository.save(expense);
@@ -36,6 +39,8 @@ public class ExpenseService {
         if (!existingExpense.getUserId().equals(currentUserId)) {
             throw new ResourceOwnershipException("You do not own this expense");
         }
+
+        validateCategoryExists(updatedExpense.getCategoryId());
 
         existingExpense.setCategoryId(updatedExpense.getCategoryId());
         existingExpense.setType(updatedExpense.getType());
@@ -55,5 +60,14 @@ public class ExpenseService {
         }
 
         expenseRepository.delete(existingExpense);
+    }
+
+    private void validateCategoryExists(Long categoryId) {
+        if (categoryId == null) {
+            return;
+        }
+        if (!expenseCategoryRepository.existsById(categoryId)) {
+            throw new IllegalArgumentException("Expense category not found: " + categoryId);
+        }
     }
 }
